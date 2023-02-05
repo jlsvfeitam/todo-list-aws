@@ -20,7 +20,7 @@ region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
 parameter_overrides = "Stage=\"staging\""
 image_repositories = []
-s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1xe5nsp04x9jt"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-staging-jlsv"
 
 [production]
 [production.deploy]
