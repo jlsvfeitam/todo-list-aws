@@ -19,12 +19,86 @@ Para utilizar SAM CLI se necesitan las siguientes herramientas:
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * [Python 3 installed](https://www.python.org/downloads/) - Se ha testeado con Python 3.7
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+* 
+
+## Comprobar redes en docker:
+docker network ls
+:~/todo-list-aws (feature) $ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+ae8ab5a5d353   bridge    bridge    local
+0573a8e94ae8   host      host      local
+bf277213565e   none      null      local
+
+## Create red docker:
+docker network create sam
+
+## Ver detalle de la red docker:
+docker network inspect sam
+
+## Bajada de la imagen docker de dynamodb:
+docker pull amazon/dynamodb-local
+
+## Comprobar imagen docker dynamodb una vez bajada:
+
+:~ $ docker images
+REPOSITORY              TAG       IMAGE ID       CREATED        SIZE
+amazon/dynamodb-local   latest    904626f640dc   47 hours ago   499MB
+:~ $
+
+## Ejecutar docker imagen dynamodb:
+docker run -p 8000:8000 --name dynamodb --network sam -d amazon/dynamodb-local
+
+## Comprobar contenedor dynamodb corriendo:
+docker ps
+
+:~/todo-list-aws (feature) $ docker ps
+CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+936b326e0988   amazon/dynamodb-local   "java -jar DynamoDBL…"   2 minutes ago   Up 2 minutes   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp   dynamodb
+:~/todo-list-aws (feature) $
+
+## Detener contenedor:
+docker stop dynamodb
+
+## Arrancar contenedor (detenido con anterioridad):
+docker start dynamodb
+
+## Ver todos los contendores (corriendo y detenidos):
+docker ps -a
+
+## Eliminar contenedor (no imagen):
+docker rm dynamodb
+
+## Para comprobar la configuración de AWS CLI, por ejemplo para ver si está configurado con credenciales:
+aws configure list
+
+## Para especificar las credenciales:
+aws configure
+
+Este menú solicita el AWS Acces Key ID, AWS Secret Access Key, Default region name y Default output format. El usuario que utilizado es uno que he creado denominado "developer"
+
+Ejemplo:
+
+:~/todo-list-aws (feature) $ aws configure
+AWS Access Key ID [None]: AKIAUNBGN4AV3CGB6WGZ
+AWS Secret Access Key [None]: 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
+Default region name [None]: us-east-1
+Default output format [None]:
+:~/todo-list-aws (feature) $
+
 
 ### Para **construir** la aplicación se deberá ejecutar el siguiente comando:
 ```bash
 sam build
 ```
+Este comando construye la aplicación serverless y la prepara para los siguientes pasos hasta completar el flujo de despliegue. El comando genera en el raíz de la aplicación una subcarpeta .aws-sam con todo lo relativo al proyecto serverless teniendo en cuenta el contenido de ficheros de configuración como requirements.txt en csao de proyecto python.
+
+### Para **validar** el AWS SAM template file ejecutar:
+```bash
+sam validate
+```
+
 ### Desplegar la aplicación por primera vez:
+sam deploy
 
 Sin utilizar la configuración del archivo samconfig.toml. Se generará un archivo de configuración reemplazando al actual si ya existe.
 Ejecutar el siguiente comando:
@@ -80,12 +154,85 @@ sam build # también se puede usar sam build --use-container si se dan problemas
 sam local start-api --port 8081 --env-vars localEnvironment.json --docker-network sam
 ```
 
+## comprobación de puerto 8000 (dynamodb) y 8081 (server local lambda) están en el servidor atendiendo:
+
+netstat -tulpn
+
+Ejemplo de salida esperada:
+
+:~/todo-list-aws (feature) $ netstat -tulpn
+(Not all processes could be identified, non-owned process info
+ will not be shown, you would have to be root to see it all.)
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 127.0.0.1:8081          0.0.0.0:*               LISTEN      10997/sam
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:6010          0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:6011          0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:8000            0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN      -
+tcp6       0      0 :::8080                 :::*                    LISTEN      -
+tcp6       0      0 :::80                   :::*                    LISTEN      -
+tcp6       0      0 :::22                   :::*                    LISTEN      -
+tcp6       0      0 ::1:6010                :::*                    LISTEN      -
+tcp6       0      0 ::1:6011                :::*                    LISTEN      -
+tcp6       0      0 :::8000                 :::*                    LISTEN      -
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           -
+udp        0      0 172.31.8.234:68         0.0.0.0:*                           -
+:~/todo-list-aws (feature) $
+
+## Instalación de jq para formatear la salida json en las peticiones curl:
+sudo apt install jq
+
+
+## Ejecución en local de todas las llamadas a la API:
+
+Create:
+curl -X POST http://127.0.0.1:8081/todos --data '{ "text": "Learn Serverless" }' | jq .
+
+List:
+curl http://127.0.0.1:8081/todos | jq .
+
+Get:
+curl http://127.0.0.1:8081/todos/<id> | jq .
+
+Update:
+curl -X PUT http://127.0.0.1:8081/todos/<id> --data '{ "text": "Learn Serverless", "checked": true }' | jq .
+
+Delete:
+curl -X DELETE http://127.0.0.1:8081/todos/<id>  
+
+## Ejecución a servicio provisto en AWS de todas las llamadas a la API:
+
+Create:
+curl -X POST https://fwodikget1.execute-api.us-east-1.amazonaws.com/Prod/todos --data '{ "text": "Learn Serverless" }' | jq .
+
+List:
+curl https://fwodikget1.execute-api.us-east-1.amazonaws.com/Prod/todos | jq .
+
+Get:
+curl https://fwodikget1.execute-api.us-east-1.amazonaws.com/Prod/todos/<id> | jq .
+
+Update:
+curl -X PUT https://fwodikget1.execute-api.us-east-1.amazonaws.com/Prod/todos/<id> --data '{ "text": "Learn Serverless", "checked": true }' | jq .
+
+Delete:
+curl -X DELETE https://fwodikget1.execute-api.us-east-1.amazonaws.com/Prod/todos/<id>  
+
+
+
 ## Consultar logs de las funciones lambda
 
 Se pueden consultar en CloudWath o ejecutando un comando similar al siguiente:
 ```bash
 sam logs -n GetTodoFunction --stack-name todo-list-aws-staging
+sam logs -n GetTodoFunction --stack-name todo-list-aws
 ```
+
+
+
+
 
 ## Tests
 
