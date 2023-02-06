@@ -13,6 +13,7 @@ pipeline {
             steps{
                 sh script: """
                     set -x
+                    git remote set-url origin https://${GITHUB_SERVER_TOKEN_ACCESS}@github.com/jlsvfeitam/todo-list-aws.git
                     git branch -a
                     git checkout -b develop origin/develop
                     git checkout -b master origin/master
