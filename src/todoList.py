@@ -43,7 +43,7 @@ def get_translate_item(key, language, dynamodb=None):
     print('.......... key: ', key)
     print('.......... language: ', language)
     print('.......... only translate text atribute')
-    from src.translatetext import translatetext
+    #  from src.translatetext import translatetext
 
     table = get_table(dynamodb)
     try:
