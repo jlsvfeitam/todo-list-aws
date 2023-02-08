@@ -122,7 +122,7 @@ class TestDatabaseFunctions(unittest.TestCase):
         self.assertEqual(200, responsePut['statusCode'])
         responseGet = get_translate_item(
                 idItem,
-                'es'
+                'es',
                 self.dynamodb)
         print ('Response Get:' + str(responseGet))
         self.assertEqual(
