@@ -16,7 +16,9 @@ python -m pip install boto3==1.26.27
 python -m pip install moto==4.0.11
 python -m pip install mock==4.0.3
 python -m pip install coverage==6.5.0
+#For translate
 python -m pip install awscli
+aws --version
 
 
 pwd
