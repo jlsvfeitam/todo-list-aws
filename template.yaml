@@ -66,6 +66,19 @@ Resources:
           Properties:
             Path: /todos/{id}
             Method: get
+  GetTranslateTodoFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: src/
+      Role: !Sub "arn:aws:iam::${AWS::AccountId}:role/LabRole"
+      Handler: translate.translate
+      Runtime: python3.7
+      Events:
+        Create:
+          Type: Api
+          Properties:
+            Path: /todos/{id}/{language}
+            Method: get            
   UpdateTodoFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -124,6 +137,9 @@ Outputs:
   GetTodoApi:
     Description: "API Gateway endpoint URL for ${opt:stage} stage for Get TODO"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/todos/{id}"
+  GetTranslateTodoApi:
+    Description: "API Gateway endpoint URL for ${opt:stage} stage for Get TODO with translate"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/todos/{id}/{language}"
   UpdateTodoApi:
     Description: "API Gateway endpoint URL for ${opt:stage} stage for Update TODO"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/todos/{id}"

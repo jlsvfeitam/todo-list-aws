@@ -19,78 +19,131 @@ Para utilizar SAM CLI se necesitan las siguientes herramientas:
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * [Python 3 installed](https://www.python.org/downloads/) - Se ha testeado con Python 3.7
 * Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
-* 
 
-## Comprobar redes en docker:
+Para una ejecución en local una vez se tenga instaladas las herramientas anteriores realizar las siguientes acciones:
+
+### Comprobar redes en docker:
+```bash
 docker network ls
+```
+Ejemplo de ejecución:
 :~/todo-list-aws (feature) $ docker network ls
 NETWORK ID     NAME      DRIVER    SCOPE
 ae8ab5a5d353   bridge    bridge    local
 0573a8e94ae8   host      host      local
 bf277213565e   none      null      local
 
-## Create red docker:
+### Create red docker:
+```bash
 docker network create sam
+```
 
-## Ver detalle de la red docker:
+### Ver detalle de la red docker:
+```bash
 docker network inspect sam
+```
 
-## Bajada de la imagen docker de dynamodb:
+### Bajada de la imagen docker de dynamodb:
+```bash
 docker pull amazon/dynamodb-local
+```
 
-## Comprobar imagen docker dynamodb una vez bajada:
+### Comprobar imagen docker dynamodb una vez bajada:
+```bash
+docker images
+```
 
+Ejemplo de ejecución:
 :~ $ docker images
 REPOSITORY              TAG       IMAGE ID       CREATED        SIZE
 amazon/dynamodb-local   latest    904626f640dc   47 hours ago   499MB
 :~ $
 
-## Ejecutar docker imagen dynamodb:
+### Ejecutar docker imagen dynamodb:
+```bash
 docker run -p 8000:8000 --name dynamodb --network sam -d amazon/dynamodb-local
+```
 
-## Comprobar contenedor dynamodb corriendo:
+### Comprobar contenedor dynamodb corriendo:
+```bash
 docker ps
+```
 
+Ejemplo de ejecución:
 :~/todo-list-aws (feature) $ docker ps
 CONTAINER ID   IMAGE                   COMMAND                  CREATED         STATUS         PORTS                                       NAMES
 936b326e0988   amazon/dynamodb-local   "java -jar DynamoDBL…"   2 minutes ago   Up 2 minutes   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp   dynamodb
 :~/todo-list-aws (feature) $
 
-## Detener contenedor:
+Una vez que el contenedor de la persistencia de la API Dynamodb está ejecutándose se debe de crear las tablas de la API con:
+
+### Crear la tabla en Dynamodb en local, para poder trabajar localmemte
+```bash
+aws dynamodb create-table --table-name local-TodosDynamoDbTable --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --endpoint-url http://localhost:8000 --region us-east-1
+```
+
+### Construir la aplicación con el siguiente comando:
+```bash
+sam build
+```
+Este comando construye la aplicación serverless y la prepara para los siguientes pasos hasta completar el flujo de despliegue. El comando genera en el raíz de la aplicación una subcarpeta .aws-sam con todo lo relativo al proyecto serverless teniendo en cuenta el contenido de ficheros de configuración como requirements.txt en csao de proyecto python.
+
+### Levantar la api en local, en el puerto 8080, dentro de la red de docker sam
+```bash
+sam local start-api --port 8081 --env-vars localEnvironment.json --docker-network sam
+sam local start-api --port 8081 --env-vars localEnvironment.json --docker-network sam --debug --invoke-image amazon/aws-sam-cli-emulation-image-python3.7
+
+```
+
+Esto levanta un servicio demonio http por el puerto 8081, que se cierra con Ctrl+C
+
+
+Otros comandos que pueden ser de ayuda:
+### Detener contenedor:
+```bash
 docker stop dynamodb
+```
 
-## Arrancar contenedor (detenido con anterioridad):
+Recomendable realizarlo antes de detener la instancia S3.
+
+### Arrancar contenedor (detenido con anterioridad):
+```bash
 docker start dynamodb
+```
 
-## Ver todos los contendores (corriendo y detenidos):
+Nota: si el contendor se elimina se debe de volver a ejecutar la creación de las tablas de la API
+
+### Ver todos los contenedores (corriendo y detenidos):
+```bash
 docker ps -a
+```
 
-## Eliminar contenedor (no imagen):
+### Eliminar contenedor (no imagen):
+```bash
 docker rm dynamodb
+```
 
-## Para comprobar la configuración de AWS CLI, por ejemplo para ver si está configurado con credenciales:
+### Para comprobar la configuración de AWS CLI, por ejemplo para ver si está configurado con credenciales:
+```bash
 aws configure list
+```
 
-## Para especificar las credenciales:
+### Para especificar las credenciales:
+```bash
 aws configure
+```
 
-Este menú solicita el AWS Acces Key ID, AWS Secret Access Key, Default region name y Default output format. El usuario que utilizado es uno que he creado denominado "developer"
+Este menú solicita el AWS Acces Key ID, AWS Secret Access Key, Default region name y Default output format de un usuario creado en AWS.
 
-Ejemplo:
-
+Ejemplo de ejecución:
 :~/todo-list-aws (feature) $ aws configure
-AWS Access Key ID [None]: AKIAUNBGN4AV3CGB6WGZ
-AWS Secret Access Key [None]: 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
+AWS Access Key ID [None]: AKIAUNBGN4AV3FGB6WGZ
+AWS Secret Access Key [None]: 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
 Default region name [None]: us-east-1
 Default output format [None]:
 :~/todo-list-aws (feature) $
 
 
-### Para **construir** la aplicación se deberá ejecutar el siguiente comando:
-```bash
-sam build
-```
-Este comando construye la aplicación serverless y la prepara para los siguientes pasos hasta completar el flujo de despliegue. El comando genera en el raíz de la aplicación una subcarpeta .aws-sam con todo lo relativo al proyecto serverless teniendo en cuenta el contenido de ficheros de configuración como requirements.txt en csao de proyecto python.
 
 ### Para **validar** el AWS SAM template file ejecutar:
 ```bash
@@ -136,23 +189,15 @@ sam deploy template.yaml --config-env prod
 
 ## Despliegue manual de la aplicación SAM en local
 
-A continuación se describen los comandos/acciones a realizar para poder probar la aplicación en local:
-```bash
-## Crear red de docker
-docker network create sam
 
-## Levantar el contenedor de dynamodb en la red de sam con el nombre de dynamodb
-docker run -p 8000:8000 --network sam --name dynamodb -d amazon/dynamodb-local
 
-## Crear la tabla en local, para poder trabajar localmemte
-aws dynamodb create-table --table-name local-TodosDynamoDbTable --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1 --endpoint-url http://localhost:8000 --region us-east-1
 
-## Empaquetar sam
-sam build # también se puede usar sam build --use-container si se dan problemas con las librerías de python
 
-## Levantar la api en local, en el puerto 8080, dentro de la red de docker sam
-sam local start-api --port 8081 --env-vars localEnvironment.json --docker-network sam
-```
+
+
+
+
+
 
 ## comprobación de puerto 8000 (dynamodb) y 8081 (server local lambda) están en el servidor atendiendo:
 
@@ -189,19 +234,19 @@ sudo apt install jq
 ## Ejecución en local de todas las llamadas a la API:
 
 Create:
-curl -X POST http://127.0.0.1:8081/todos --data '{ "text": "Learn Serverless" }' | jq .
+curl -s -X POST http://127.0.0.1:8081/todos --data '{ "text": "Learn Serverless" }' | jq .
 
 List:
-curl http://127.0.0.1:8081/todos | jq .
+curl -s http://127.0.0.1:8081/todos | jq .
 
 Get:
-curl http://127.0.0.1:8081/todos/<id> | jq .
+curl -s http://127.0.0.1:8081/todos/<id> | jq .
 
 Update:
-curl -X PUT http://127.0.0.1:8081/todos/<id> --data '{ "text": "Learn Serverless", "checked": true }' | jq .
+curl -s -X PUT http://127.0.0.1:8081/todos/<id> --data '{ "text": "Learn Serverless", "checked": true }' | jq .
 
 Delete:
-curl -X DELETE http://127.0.0.1:8081/todos/<id>  
+curl -s -X DELETE http://127.0.0.1:8081/todos/<id>  
 
 ## Ejecución a servicio provisto en AWS de todas las llamadas a la API:
 
