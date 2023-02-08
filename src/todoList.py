@@ -60,29 +60,27 @@ def get_translate_item(key, language, dynamodb=None):
         if 'Item' in result:
             itemAux = result['Item']
             if 'text' in itemAux:
-                print('.......... text language source: ', itemAux['text'])
+                print('text language source: ', itemAux['text'])
                 #  try:
-                    
-                    #  translate = boto3.client(service_name='translate',
-                    #                         region_name='us-east-1')
-                print('.......... 00100')
-                    #  resultTranslate = \
-                    #      translate.translate_text(Text=itemAux['text'],
-                    #                               SourceLanguageCode='en',
-                    #                               TargetLanguageCode=language)
-                    #  print('.......... 00200')
-                    #  textTranslated = resultTranslate.get('TranslatedText')
-                    #  print('.......... 00300')
-                    #  itemAux['text'] = textTranslated
-                    #  print('.......... text language target: ', itemAux['text'])
+                #  translate = boto3.client(service_name='translate',
+                #                         region_name='us-east-1')
+                #  resultTranslate = \
+                #      translate.translate_text(Text=itemAux['text'],
+                #                               SourceLanguageCode='en',
+                #                               TargetLanguageCode=language)
+                #  print('.......... 00200')
+                #  textTranslated = resultTranslate.get('TranslatedText')
+                #  print('.......... 00300')
+                #  itemAux['text'] = textTranslated
+                #  print('.......... text language target: ', itemAux['text'])
                 itemAux['text'] = \
                     translatetext(itemAux['text'],
-                                                  'en',
-                                                  language)
-                print('.......... 00400')
+                                  'en',
+                                  language)
+                print('text language target: ', itemAux['text'])
                 #  except Exception as e:
                 #    print('.......... Error en translate: ', e.Message)
-                        #  e.response['Error']['Message'])
+                #  e.response['Error']['Message'])
                 # else:
                 return result['Item']
 
