@@ -62,8 +62,10 @@ def get_translate_item(key, language, dynamodb=None):
                 print('.......... text language source: ', itemAux['text'])
                 try:
                     translate = boto3.client(service_name='translate')
-                    resultTranslate = translate.translate_text(Text='Hello',
-                                                               SourceLanguageCode='en', TargetLanguageCode='es')
+                    resultTranslate = \
+                        translate.translate_text(Text='Hello',
+                                                 SourceLanguageCode='en',
+                                                 TargetLanguageCode='es')
                     textTranslated = resultTranslate.get('TranslatedText')
 
                     itemAux['text'] = textTranslated
