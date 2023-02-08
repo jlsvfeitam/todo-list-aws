@@ -112,6 +112,7 @@ class TestDatabaseFunctions(unittest.TestCase):
         print ('Start: test_get_todo')
         from src.todoList import get_item
         from src.todoList import put_item
+        from src.todoList import get_translate_item
 
         # Testing file functions
         # Table mock
