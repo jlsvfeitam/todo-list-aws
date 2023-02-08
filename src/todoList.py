@@ -61,6 +61,21 @@ def get_translate_item(key, language, dynamodb=None):
             itemAux = result['Item']
             if 'text' in itemAux:
                 print('text language source: ', itemAux['text'])
+                try:
+                    translate = boto3.client(service_name='translate')
+                    resultTranslate = \
+                        translate.translate_text(Text=itemAux['text'],
+                                                 SourceLanguageCode='en',
+                                                 TargetLanguageCode=language)
+                    textTranslated = resultTranslate.get('TranslatedText')
+
+                    itemAux['text'] = textTranslated
+                    print('.......... text language target: ', itemAux['text'])
+                except Exception as e:
+                    print('.......... Error en translate: ',
+                          e.response['Error']['Message'])
+                else:
+                    return result['Item']
                 #  try:
                 #  translate = boto3.client(service_name='translate',
                 #                         region_name='us-east-1')
@@ -73,16 +88,16 @@ def get_translate_item(key, language, dynamodb=None):
                 #  print('.......... 00300')
                 #  itemAux['text'] = textTranslated
                 #  print('.......... text language target: ', itemAux['text'])
-                itemAux['text'] = \
-                    translatetext(itemAux['text'],
-                                  'en',
-                                  language)
-                print('text language target: ', itemAux['text'])
+                #  itemAux['text'] = \
+                #      translatetext(itemAux['text'],
+                #                    'en',
+                #                    language)
+                #  print('text language target: ', itemAux['text'])
                 #  except Exception as e:
                 #    print('.......... Error en translate: ', e.Message)
                 #  e.response['Error']['Message'])
                 # else:
-                return result['Item']
+                #  return result['Item']
 
 
 def get_items(dynamodb=None):
