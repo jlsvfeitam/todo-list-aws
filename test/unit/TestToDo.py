@@ -127,7 +127,7 @@ class TestDatabaseFunctions(unittest.TestCase):
                 self.dynamodb)
         print ('Response Get:' + str(responseGet))
         self.assertEqual(
-            'Aprenda sin servidor',
+            'Aprender DevOps y Cloud en la UNIR',
             responseGet['text'])
         print ('End: test_get_todo_translate')
     
