@@ -7,6 +7,18 @@ pipeline {
                 echo 'Setup Virtualenv for testing'
                 sh "bash pipelines/PIPELINE-FULL-STAGING/setup.sh"
             }
+        } 
+        stage('Integration Test after deploy lab'){
+            steps{
+                script {
+                    sh "pwd"
+                    sh "python -v"
+                    // sh "sudo pip install awscli --force-reinstall --upgrade && sudo chmod 755 /usr/local/bin/aws"
+                    sh "python -m pip install awscli"
+                    sh "aws --version"
+                }
+                   
+            }
         }
         stage('Test'){
             steps{
