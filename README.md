@@ -295,6 +295,22 @@ Para ejecutar los tests **unitarios** y de **integración** es necesario ejecuta
 
 ## Especificar el BASE_URL
 export BASE_URL=https://<<id-api-rest>>.execute-api.us-east-1.amazonaws.com/Prod
+export BASE_URL="https://e3h5d34ul6.execute-api.us-east-1.amazonaws.com/Prod"
+
+aws sts get-session-token \
+    --duration-seconds 900 \
+    --serial-number "YourMFADeviceSerialNumber" \
+    --token-code 123456
+    
+export AWS_ACCESS_KEY_ID=AKIAUNBGN4AVQJGMVFOO
+export AWS_SECRET_ACCESS_KEY=1imBCmRfR3PItwx/PoGpzuVWfZPunnxlnJlfKULF
+export AWS_SESSION_TOKEN=
+
+aws sts assume-role --role-arn arn:aws:iam::123456789012:role/role-name --role-session-name "RoleSession1" --profile IAM-user-name > assume-role-output.txt
+aws sts assume-role --role-arn arn:aws:iam::302875795499:role/LabRole --role-session-name "LabRole" --profile DevelopersGroupLabDevopsCloud > assume-role-output.txt
+
+arn:aws:iam::302875795499:user/developer
+
 
 ## Configuración del entorno virtual ##
 pipelines/PIPELINE-FULL-STAGING/setup.sh
