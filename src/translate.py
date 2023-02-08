@@ -6,7 +6,8 @@ import todoList
 # https://programmingpercy.tech/blog/develop-and-debug-sam/
 def translate(event, context):
     # create a response
-    item = todoList.get_translate_item(event['pathParameters']['id'], event['pathParameters']['language'])
+    item = todoList.get_translate_item(
+        event['pathParameters']['id'], event['pathParameters']['language'])
     if item:
         response = {
             "statusCode": 200,

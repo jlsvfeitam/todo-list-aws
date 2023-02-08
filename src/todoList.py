@@ -62,13 +62,15 @@ def get_translate_item(key, language, dynamodb=None):
                 print('.......... text language source: ', itemAux['text'])
                 try:
                     translate = boto3.client(service_name='translate')
-                    resultTranslate = translate.translate_text(Text='Hello', SourceLanguageCode='en', TargetLanguageCode='es') # comment for localhost
-                    textTranslated = resultTranslate.get('TranslatedText') # comment for localhost
-                    #textTranslated = 'Hola' # uncomment for localhost
-                    itemAux['text'] = textTranslated # assign text transated to text atribute
+                    resultTranslate = translate.translate_text(Text='Hello', 
+                    SourceLanguageCode='en', TargetLanguageCode='es') 
+                    textTranslated = resultTranslate.get('TranslatedText') 
+                    
+                    itemAux['text'] = textTranslated 
                     print('.......... text language target: ', itemAux['text'])
                 except Exception as e:
-                    print('.......... Error en translate: ', e.response['Error']['Message'])
+                    print('.......... Error en translate: ', 
+                    e.response['Error']['Message'])
                 else:
                     return result['Item']
 
