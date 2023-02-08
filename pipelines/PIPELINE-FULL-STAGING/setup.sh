@@ -18,6 +18,8 @@ python -m pip install mock==4.0.3
 python -m pip install coverage==6.5.0
 #For translate
 #python -m pip install awscli
+python -m pip install awscli
+python -m pip install aws-sam-cli
 aws --version
 
 
