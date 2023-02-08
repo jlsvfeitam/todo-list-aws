@@ -36,13 +36,14 @@ def get_item(key, dynamodb=None):
         print('Result getItem:'+str(result))
         if 'Item' in result:
             return result['Item']
-            
+
+
 def get_translate_item(key, language, dynamodb=None):
     print('.......... get_translate_item')
     print('.......... key: ', key)
     print('.......... language: ', language)
     print('.......... only translate text atribute')
-    
+
     table = get_table(dynamodb)
     try:
         result = table.get_item(
