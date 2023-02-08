@@ -109,7 +109,7 @@ class TestDatabaseFunctions(unittest.TestCase):
     
     def test_get_todo_translate(self):
         print ('---------------------')
-        print ('Start: test_get_todo')
+        print ('Start: test_get_todo_translate')
         from src.todoList import get_item
         from src.todoList import put_item
         from src.todoList import get_translate_item
@@ -126,10 +126,11 @@ class TestDatabaseFunctions(unittest.TestCase):
                 'es',
                 self.dynamodb)
         print ('Response Get:' + str(responseGet))
-        print ('.......... Response Get attribute text:' + str(print ('Response Get:' + str(responseGet))))
+        itemResponseGet = responseGet['Item']
+        print ('.......... Response Get attribute text:' + str(itemResponseGet['text']))
         self.assertEqual(
             'Aprender DevOps y Cloud en la UNIR',
-            responseGet['text'])
+            itemResponseGet['text'])
         print ('End: test_get_todo_translate')
     
     def test_list_todo(self):

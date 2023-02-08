@@ -293,22 +293,14 @@ Para ejecutar los tests **unitarios** y de **integración** es necesario ejecuta
 ```bash
 # Ejecución Pruebas #
 
+## Especificar el BASE_URL
+export BASE_URL=https://<<id-api-rest>>.execute-api.us-east-1.amazonaws.com/Prod
+
 ## Configuración del entorno virtual ##
 pipelines/PIPELINE-FULL-STAGING/setup.sh
 
 ## Pruebas unitarias ##
 pipelines/PIPELINE-FULL-STAGING/unit_test.sh
-
-Ejemplo de como ejecutar unit test en local (en revisión):
-
-export DYNAMODB_TABLE=todoUnitTestsTable
-python test/unit/TestToDo.py
-pip show coverage
-coverage run --include=src/todoList.py test/unit/TestToDo.py
-coverage report
-coverage xml
-bash pipelines/PIPELINE-FULL-STAGING/setup.sh    
-bash pipelines/PIPELINE-FULL-STAGING/unit_test.sh
 
 ## pruebas estáticas (seguridad, calidad, complejidad ) ##
 pipelines/PIPELINE-FULL-STAGING/static_test.sh
