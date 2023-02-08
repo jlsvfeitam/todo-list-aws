@@ -65,7 +65,7 @@ def get_translate_item(key, language, dynamodb=None):
                     resultTranslate = \
                         translate.translate_text(Text=itemAux['text'],
                                                  SourceLanguageCode='en',
-                                                 TargetLanguageCode='es')
+                                                 TargetLanguageCode=language)
                     textTranslated = resultTranslate.get('TranslatedText')
 
                     itemAux['text'] = textTranslated
