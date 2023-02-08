@@ -42,13 +42,6 @@ pipeline {
         stage('Integration Test after deploy'){
             steps{
                 script {
-                    sh "pwd"
-                    // sh "pip install --upgrade --user awscli"
-                    // sh "sudo pip install awscli --force-reinstall --upgrade && sudo chmod 755 /usr/local/bin/aws"
-                    // sh "python -m pip install awscli"
-                    // sh "python -m pip install aws-sam-cli && aws --version"
-                    sh "aws --version"
-                    sh "pwd"
                     def BASE_URL = sh( script: "aws cloudformation describe-stacks --stack-name todo-list-aws-staging --query 'Stacks[0].Outputs[?OutputKey==`BaseUrlApi`].OutputValue' --region us-east-1 --output text",
                         returnStdout: true)
                     echo "$BASE_URL"
