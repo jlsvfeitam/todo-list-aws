@@ -19,4 +19,4 @@ def translate(event, context):
             "statusCode": 404,
             "body": ""
         }
-    return 
+    return response
