@@ -43,7 +43,7 @@ pipeline {
             steps{
                 script {
                     sh "pwd"
-                    sh "python -m pip install awscli"
+                    sh "pip install --upgrade --user awscli"
                     sh "aws --version"
                     def BASE_URL = sh( script: "aws cloudformation describe-stacks --stack-name todo-list-aws-staging --query 'Stacks[0].Outputs[?OutputKey==`BaseUrlApi`].OutputValue' --region us-east-1 --output text",
                         returnStdout: true)
