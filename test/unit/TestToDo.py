@@ -1,3 +1,5 @@
+#!/usr/local/bin/python
+# coding: latin-1
 import warnings
 import unittest
 import boto3
@@ -103,6 +105,30 @@ class TestDatabaseFunctions(unittest.TestCase):
             self.text,
             responseGet['text'])
         print ('End: test_get_todo')
+        
+    
+    def test_get_todo_translate(self):
+        print ('---------------------')
+        print ('Start: test_get_todo')
+        from src.todoList import get_item
+        from src.todoList import put_item
+
+        # Testing file functions
+        # Table mock
+        responsePut = put_item(self.text, self.dynamodb)
+        print ('Response put_item:' + str(responsePut))
+        idItem = json.loads(responsePut['body'])['id']
+        print ('Id item:' + idItem)
+        self.assertEqual(200, responsePut['statusCode'])
+        responseGet = get_translate_item(
+                idItem,
+                'es'
+                self.dynamodb)
+        print ('Response Get:' + str(responseGet))
+        self.assertEqual(
+            'Aprenda sin servidor',
+            responseGet['text'])
+        print ('End: test_get_todo_translate')
     
     def test_list_todo(self):
         print ('---------------------')

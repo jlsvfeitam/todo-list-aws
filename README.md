@@ -299,6 +299,17 @@ pipelines/PIPELINE-FULL-STAGING/setup.sh
 ## Pruebas unitarias ##
 pipelines/PIPELINE-FULL-STAGING/unit_test.sh
 
+Ejemplo de como ejecutar unit test en local (en revisión):
+
+export DYNAMODB_TABLE=todoUnitTestsTable
+python test/unit/TestToDo.py
+pip show coverage
+coverage run --include=src/todoList.py test/unit/TestToDo.py
+coverage report
+coverage xml
+bash pipelines/PIPELINE-FULL-STAGING/setup.sh    
+bash pipelines/PIPELINE-FULL-STAGING/unit_test.sh
+
 ## pruebas estáticas (seguridad, calidad, complejidad ) ##
 pipelines/PIPELINE-FULL-STAGING/static_test.sh
 
